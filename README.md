@@ -1,6 +1,5 @@
 # Clock-Calendar
 Custom web component &lt;clock-calendar> V1
-Create application &quot;Clock/Calendar&quot;
 
 Requirements:
 - after start app should display time in &#39;short&#39; format
