@@ -15,6 +15,7 @@ for Calendar - switch formats between &#39;eu-date&#39; and &#39;ua-date&#39;
 
 Injecting to the page:
 - output hovering be located into tag &lt;div&gt; with class &#39;Clock-Calendar&#39;
+
 Formats:
 &#39;short&#39; - HH:MM
 &#39;full&#39; - HH:MM:SS
