@@ -6,6 +6,15 @@ class ClockCalendar extends HTMLElement {
         this.isShortFormat = true;
         this.isUaDate = true;
         this.isClock = true;
+
+        //making shadow DOM
+        let shadowRoot = this.attachShadow({mode: 'open'});
+        let tmpl = document.querySelector('template');
+        shadowRoot.appendChild(tmpl.content.cloneNode(true));
+        //console.log (tmpl);
+        //console.log (shadowRoot.querySelector("div"));
+
+        //events
         this.addEventListener ('click', this.eventsOnLeftClick);
         this.addEventListener ('contextmenu', this.eventsOnRightClick);
         this.addEventListener ('mouseover', this.onMouseOver);
@@ -14,7 +23,7 @@ class ClockCalendar extends HTMLElement {
 
 // ***************** CONTROL *************
     //right mouse button
-    switch(){
+    switchClockCalendar(){
         this.isClock = !this.isClock;
     }   
 
@@ -47,32 +56,43 @@ class ClockCalendar extends HTMLElement {
         return timeStr;
     }
     getFullTime(){
-        const elem = this;
+        const me = this; //to bind context for interval
+        const elem = this.shadowRoot.querySelector("div");
         let now = new Date();        
         elem.innerHTML = this.toTimeFormat(now);
         let timerId = setInterval(function (){
             now = new Date();            
-            elem.innerHTML = elem.toTimeFormat(now);
+            elem.innerHTML = me.toTimeFormat(now);
         }, 1000);  
         return timerId;  
     }
-
     getShortTime(){
-        const elem = this;  
+        const me = this;//to bind context for interval
+        const elem = this.shadowRoot.querySelector("div");        
         let now = new Date();        
         elem.innerHTML = this.toTimeFormat(now);
+        let interval = this.calcIntervalForShort(now);
         let timerId = setInterval(function (){
-            now = new Date();            
-            elem.innerHTML = elem.toTimeFormat(now);
-        }, 60000);  
+            clearInterval (timerId);
+            now = new Date();
+            elem.innerHTML = me.toTimeFormat(now);                  
+        }, interval);        
         return timerId;  
+    }    
+    calcIntervalForShort (now){
+        return 60000 - 1000*now.getSeconds();
     }
 //   ************** DATE *******************
-    getUaDate(){
-        const elem = this;    
-        let now = new Date();
-        let interval = 3600000 - 60*60*1000*now.getHours() - 
+    calcIntervalForDate(now){
+        return 3600000 - 60*60*1000*now.getHours() - 
                 60*1000*now.getMinutes() - 1000*now.getSeconds();
+    }
+
+    getUaDate(){
+        //const elem = this;//to bind context for interval 
+        const elem = this.shadowRoot.querySelector("div"); 
+        let now = new Date();
+        let interval = this.calcIntervalForDate(now);
         let timerId = setInterval(function (){
             let now = new Date();
             let uaDate = `${now.getDate()}.${now.getMonth()+1}.${now.getFullYear()}`;
@@ -81,11 +101,10 @@ class ClockCalendar extends HTMLElement {
         return timerId;
     }
     getEuDate(){
-        const elem = this;
+        //const elem = this;//to bind context for interval
+        const elem = this.shadowRoot.querySelector("div");
         let now = new Date();
-        let interval = 3600000 - 60*60*1000*now.getHours() - 
-                60*1000*now.getMinutes() - 1000*now.getSeconds();
-
+        let interval = this.calcIntervalForDate(now);        
         let timerId = setInterval(function (){
             let now = new Date();
             let year = now.getFullYear().toString().slice(2);
@@ -102,7 +121,7 @@ class ClockCalendar extends HTMLElement {
             }
             this.timerId = this.getShortTime();
         } else if (!this.isShortFormat) {
-            if (this.timerId){
+            if (this.timerId){ //clear current timer
                 clearInterval(this.timerId);
             }
             this.timerId = this.getFullTime();
@@ -110,12 +129,12 @@ class ClockCalendar extends HTMLElement {
     }
     showCalendar() {
         if (this.isUaDate) {
-            if (this.timerId) {
+            if (this.timerId) { //clear current timer
                 clearInterval(this.timerId);
             }
             this.timerId = this.getUaDate();
         } else if (!this.isUaDate) {
-            if (this.timerId){
+            if (this.timerId){ //clear current timer
                 clearInterval(this.timerId);
             }
             this.timerId = this.getEuDate();
@@ -142,21 +161,23 @@ class ClockCalendar extends HTMLElement {
         }
     }
     eventsOnRightClick(){
-        this.switch();
+        this.switchClockCalendar();
         this.run();    
     }
     onMouseOver(){
-        this.style.backgroundColor = "#0c0c0c";
-        this.style.color = "#ffffff";
+        const elem = this.shadowRoot.querySelector("div");
+        elem.style.backgroundColor = "#0c0c0c";
+        elem.style.color = "#ffffff";
     }
     onMouseOut(){
-        this.style.backgroundColor = "#cfcfcf";
-        this.style.color = "black";
+        const elem = this.shadowRoot.querySelector("div");
+        elem.style.backgroundColor = "#cfcfcf";
+        elem.style.color = "black";
     }    
 }
 
 // регистрируем новый элемент в браузере по современному
-customElements.define('clock-calendar', ClockCalendar);
+window.customElements.define('clock-calendar', ClockCalendar);
 
 
 
