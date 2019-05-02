@@ -10,23 +10,23 @@
 <body>  
     
 <template id="clock-calendar-shadowDOM">
-  <style>
-    div {display: block;
+  <style>    
+    div {display: inline-block;
         text-align: center;
         line-height: 50px;
         font-size: 25px;
         background-color: #cfcfcf;
         border-radius: 5px;
-        width: 110px;
+        min-width: 120px;
         min-height: 50px;
     }
   </style>
   <div></div>
-  <slot></slot>
+  <slot></slot> 
 </template>
 
     <clock-calendar/>
     
-<script type="text/javascript" src="clockCalendar.js"></script>
+<script type="module" src="clockCalendar.js"></script>
 </body>
 </html>
